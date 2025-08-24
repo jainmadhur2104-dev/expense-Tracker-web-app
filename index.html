@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>Personal Expense Tracker</h1>
+            <div class="current-date" id="currentDate"></div>
+        </header>
+
+        <!-- Balance Overview Section -->
+        <section class="balance-overview">
+            <div class="balance-card">
+                <h2>Current Balance</h2>
+                <div class="balance-amount" id="balanceAmount">$0.00</div>
+            </div>
+            <div class="overview-stats">
+                <div class="stat-card income-card">
+                    <h3>Total Income</h3>
+                    <div class="stat-amount" id="totalIncome">$0.00</div>
+                </div>
+                <div class="stat-card expense-card">
+                    <h3>Total Expenses</h3>
+                    <div class="stat-amount" id="totalExpenses">$0.00</div>
+                </div>
+            </div>
+            <div class="budget-progress">
+                <h3>Monthly Budget Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="budgetProgress"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="budgetUsed">$0</span> of <span id="budgetTotal">$2000</span> used
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="quick-actions">
+            <div class="action-buttons">
+                <button class="btn btn--primary" onclick="openTransactionModal()">Add Transaction</button>
+                <button class="btn btn--secondary" onclick="openBudgetModal()">Set Budget</button>
+            </div>
+        </section>
+
+        <!-- Transaction Management Section -->
+        <section class="transaction-management">
+            <div class="management-header">
+                <h2>Transactions</h2>
+                <div class="filters">
+                    <input type="text" class="form-control search-input" id="searchInput" placeholder="Search transactions...">
+                    <select class="form-control category-filter" id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+            </div>
+            <div class="transaction-list" id="transactionList">
+                <!-- Transactions will be populated here -->
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section class="reports">
+            <h2>Monthly Summary</h2>
+            <div class="report-cards">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>This Month</h3>
+                        <div class="report-stats">
+                            <div class="report-stat">
+                                <span class="label">Income:</span>
+                                <span class="value income" id="monthlyIncome">$0.00</span>
+                            </div>
+                            <div class="report-stat">
+                                <span class="label">Expenses:</span>
+                                <span class="value expense" id="monthlyExpenses">$0.00</span>
+                            </div>
+                            <div class="report-stat">
+                                <span class="label">Net:</span>
+                                <span class="value" id="monthlyNet">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card__body">
+                        <h3>Top Categories</h3>
+                        <div class="category-breakdown" id="categoryBreakdown">
+                            <!-- Category breakdown will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal hidden" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Transaction</h3>
+                <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label class="form-label" for="description">Description</label>
+                        <input type="text" class="form-control" id="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="amount">Amount</label>
+                        <input type="number" class="form-control" id="amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="type" value="income" onchange="updateCategoryOptions()">
+                                <span>Income</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="type" value="expense" onchange="updateCategoryOptions()" checked>
+                                <span>Expense</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="category">Category</label>
+                        <select class="form-control" id="category" required>
+                            <!-- Categories will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="date">Date</label>
+                        <input type="date" class="form-control" id="date" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--secondary" onclick="closeTransactionModal()">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div class="modal hidden" id="budgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set Monthly Budget</h3>
+                <button class="modal-close" onclick="closeBudgetModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="budgetForm">
+                    <div class="form-group">
+                        <label class="form-label" for="budgetAmount">Monthly Budget Amount</label>
+                        <input type="number" class="form-control" id="budgetAmount" step="0.01" min="0" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--secondary" onclick="closeBudgetModal()">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Set Budget</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal hidden" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this transaction?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--secondary" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="button" class="btn btn--primary btn--danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
